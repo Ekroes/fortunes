@@ -15,6 +15,7 @@ public class FortuneUI {
 	FortuneDAO dao = new FortuneDAO();
 
 	public void mainMenu() throws SQLException {
+		out.println("Welcome to Fortunes.");
 		boolean keepRunning = true;
 		while(keepRunning)
 		{
