@@ -3,6 +3,18 @@
 This is a project to demonstrate a console app using JDBC for data load/save.  Tracks 
 quotes / fortune cookie sayings, with the inital set pre-loaded from a file.
 
+## Getting Start
+
+Fork this project on github, so you have your own copy.  Then find the green "Clone or download" button,
+to get the url to clone it.  Then from git bash, do:
+
+    git clone <yoururl>
+
+After you have a copy of the project locally, go into Eclipse.  File, Import, From Existing 
+Workspace, (browse to the folder), checkbox the project name fortunes.  Then tell it Finish.
+
+Wait a moment for the compile to finish, and then move on to Setup.
+
 ## Setup
 
 1. Verify that 'javadbapp' user exists in your database, or see below for how to create it.
