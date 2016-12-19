@@ -9,14 +9,16 @@ public class Fortune {
 	
 	private Integer id = null;
 	private String saying = "";
+	private Boolean isArchived = false;
 	
 	public Fortune(String saying) {
 		this.saying = saying;
 	}
 
-	public Fortune(Integer id, String saying) {
+	public Fortune(Integer id, String saying, Boolean isArchived) {
 		this.id = id;
 		this.saying = saying;
+		this.isArchived = isArchived;
 	}
 	
 	public Integer getId() {
@@ -35,8 +37,16 @@ public class Fortune {
 		this.saying = saying;
 	}
 	
+	public Boolean isArchived() {
+		return isArchived;
+	}
+
+	public void setArchived(Boolean archived) {
+		this.isArchived = archived;
+	}
+
 	public String toString() {
-		return "--------\n" + id + "\n" + saying + "\n--------";
+		return "--------\n" + id + (isArchived ? " (archived)" : "") + "\n" + saying + "\n--------";
 	}
 
 }

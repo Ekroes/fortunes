@@ -131,14 +131,20 @@ public class FortuneUI {
 
 		out.println("Here is the existing text of the fortune.");
 		out.println(f);
-		
-		out.println("Are you sure you want to delete this one? y/n ");
+		out.println("Do you want to archive (soft delete) or delete (hard delete) this fortune? ");
+		out.println("(a for archive, d for delete, c for cancel)");
+		out.print("? ");
 		String text = keyboard.nextLine();
-		if (text.equals("y")) {
+
+		if (text.equals("d")) {
 			dao.delete(id);
 			out.println("Deleted.");
+		} else if (text.equals("a")) {
+			f.setArchived(true);
+			dao.save(f);
+			out.println("Archived.");
 		} else {
-			out.println("You didn't type y so canceling delete.");
+			out.println("You didn't type a or d so canceling.");
 		}
 	}
 

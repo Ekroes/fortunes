@@ -71,14 +71,14 @@ public class FortuneDAO {
 	/**
 	 * Gets the Nth fortune in the table regardless of its id; for example 3
 	 * would get the third fortune. This differs from get() because some
-	 * fortunes may have been deleted, so ids don't match order.
+	 * fortunes may have been deleted, so ids don't match order.  Skips archived fortunes.
 	 * 
 	 * @param n
 	 * @return
 	 * @throws SQLException
 	 */
 	public Fortune getNth(int n) throws SQLException {
-		String sql = "select * from fortune order by id limit ?";
+		String sql = "select * from fortune where archived=false order by id limit ?";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -94,7 +94,7 @@ public class FortuneDAO {
 			for (int i = 0; i <= n; i++) {
 				res.next();
 			}
-			return new Fortune(res.getInt("id"), res.getString("saying"));
+			return new Fortune(res.getInt("id"), res.getString("saying"), res.getBoolean("archived"));
 		} finally {
 			DbUtil.silentCloseConnection(conn);
 			DbUtil.silentCloseStatement(pstmt);
@@ -121,7 +121,7 @@ public class FortuneDAO {
 
 			res = pstmt.executeQuery();
 			if (res.next()) {
-				return new Fortune(res.getInt("id"), res.getString("saying"));
+				return new Fortune(res.getInt("id"), res.getString("saying"), res.getBoolean("archived"));
 			} else {
 				return null;
 			}
@@ -149,7 +149,7 @@ public class FortuneDAO {
 			pstmt = conn.prepareStatement(sql);
 			res = pstmt.executeQuery();
 			while (res.next()) {
-				fortunes.add(new Fortune(res.getInt("id"), res.getString("saying")));
+				fortunes.add(new Fortune(res.getInt("id"), res.getString("saying"), res.getBoolean("archived")));
 			}
 			return fortunes;
 		} finally {
@@ -179,7 +179,7 @@ public class FortuneDAO {
 			pstmt.setString(1, "%" + text + "%");
 			res = pstmt.executeQuery();
 			while (res.next()) {
-				fortunes.add(new Fortune(res.getInt("id"), res.getString("saying")));
+				fortunes.add(new Fortune(res.getInt("id"), res.getString("saying"), res.getBoolean("archived")));
 			}
 			return fortunes;
 		} finally {
@@ -202,7 +202,7 @@ public class FortuneDAO {
 	}
 
 	private void update(Fortune f) throws SQLException {
-		String sql = "update fortune set saying=? where id=?";
+		String sql = "update fortune set saying=?, archived=? where id=?";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -211,7 +211,8 @@ public class FortuneDAO {
 			conn = DbUtil.openConnection();
 			pstmt = conn.prepareStatement(sql);
 			pstmt.setString(1, f.getSaying());
-			pstmt.setInt(2, f.getId());
+			pstmt.setBoolean(2, f.isArchived());
+			pstmt.setInt(3, f.getId());
 			pstmt.executeUpdate();
 		} finally {
 			DbUtil.silentCloseConnection(conn);
@@ -220,7 +221,7 @@ public class FortuneDAO {
 	}
 
 	private void insert(Fortune f) throws SQLException {
-		String sql = "insert into fortune (saying) values (?)";
+		String sql = "insert into fortune (saying, archived) values (?, ?)";
 
 		Connection conn = null;
 		PreparedStatement pstmt = null;
@@ -229,6 +230,7 @@ public class FortuneDAO {
 			conn = DbUtil.openConnection();
 			pstmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
 			pstmt.setString(1, f.getSaying());
+			pstmt.setBoolean(2, f.isArchived());
 			pstmt.executeUpdate();
 			try (ResultSet generatedKeys = pstmt.getGeneratedKeys()) {
 				if (generatedKeys.next()) {
